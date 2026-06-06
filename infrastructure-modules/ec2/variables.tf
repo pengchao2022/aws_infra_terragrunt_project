@@ -16,3 +16,12 @@ variable "ec2_tags" {
   default = {}
   
 }
+
+variable "volume_size" {
+  type = number
+  default = 20  
+}
+
+variable "vpc_id" {
+  type = string
+}

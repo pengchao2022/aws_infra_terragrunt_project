@@ -8,7 +8,7 @@ terraform {
 }
 
 dependency "vpc" {
-  config_path = "../infrastructure-live/vpc"
+  config_path = "../vpc"
 }
 # dynamicly load variables
 inputs = read_terragrunt_config("inputs.hcl").inputs

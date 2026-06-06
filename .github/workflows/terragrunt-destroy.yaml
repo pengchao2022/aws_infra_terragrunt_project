@@ -36,24 +36,28 @@ jobs:
 
       - name: Terragrunt Destroy
         run: |
-          # 销毁顺序必须与部署顺序严格相反
-          # 必须先删 EC2，再删 VPC
-          DESTROY_ORDER=("dev/ec2" "dev/vpc" "test/vpc" "stage/vpc" "prod/vpc")
+          # 销毁顺序：先销毁依赖方(EC2)，再销毁资源提供方(VPC)
+          # 注意：此逻辑会按数组顺序逐个销毁，中间任何一个报错都会终止流程
+          MODULES=("dev/ec2" "dev/vpc" "test/vpc" "stage/vpc" "prod/vpc")
           
-          for module in "${DESTROY_ORDER[@]}"; do
+          for module in "${MODULES[@]}"; do
             echo "--- Destroying $module ---"
+            
+            # 进入目录
             cd $module
             
-            # 1. 强制清理旧缓存，防止错误的依赖引用
+            # 清理缓存，确保读取的是当前线上最新的 State
             rm -rf .terragrunt-cache
             
-            # 2. 初始化
+            # 执行初始化
             terragrunt init -reconfigure -no-color
             
-            # 3. 销毁资源
+            # 销毁资源
+            # -auto-approve 意味着不提示确认，请务必在运行前确认环境正确
             terragrunt destroy -auto-approve -no-color
             
-            cd -
+            # 始终返回到根目录，防止 cd 路径错乱
+            cd $GITHUB_WORKSPACE/infrastructure-live
           done
         env:
           TG_NON_INTERACTIVE: "true"

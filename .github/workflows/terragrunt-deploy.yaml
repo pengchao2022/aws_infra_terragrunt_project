@@ -57,7 +57,7 @@ jobs:
       - name: Terragrunt Init
         run: |
           # Traverse all directories
-          MODULES=("dev/vpc" "dev/ec2" "prod/vpc" "stage/vpc" "test/vpc")
+          MODULES=("dev/vpc" "prod/vpc" "stage/vpc" "test/vpc" "dev/ec2")
           for module in "${MODULES[@]}"; do
             echo "--- Initializing $module ---"
             # change to sub directory

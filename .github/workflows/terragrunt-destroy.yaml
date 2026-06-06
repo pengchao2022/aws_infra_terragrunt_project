@@ -1,0 +1,59 @@
+name: "Terragrunt Destroy"
+
+on:
+  workflow_dispatch: # 手动触发，避免意外删除生产环境
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terragrunt-destroy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infrastructure-live
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }} 
+          aws-region: us-east-1
+
+      - name: Setup Terraform & Terragrunt
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.0"
+      
+      - name: Install Terragrunt
+        run: |
+          TG_VERSION=$(curl -s "https://api.github.com/repos/gruntwork-io/terragrunt/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")')
+          curl -L "https://github.com/gruntwork-io/terragrunt/releases/download/${TG_VERSION}/terragrunt_linux_amd64" -o terragrunt
+          sudo mv terragrunt /usr/local/bin/terragrunt
+          sudo chmod +x /usr/local/bin/terragrunt
+
+      - name: Terragrunt Destroy
+        run: |
+          # 销毁顺序必须与部署顺序严格相反
+          # 必须先删 EC2，再删 VPC
+          DESTROY_ORDER=("dev/ec2" "dev/vpc" "test/vpc" "stage/vpc" "prod/vpc")
+          
+          for module in "${DESTROY_ORDER[@]}"; do
+            echo "--- Destroying $module ---"
+            cd $module
+            
+            # 1. 强制清理旧缓存，防止错误的依赖引用
+            rm -rf .terragrunt-cache
+            
+            # 2. 初始化
+            terragrunt init -reconfigure -no-color
+            
+            # 3. 销毁资源
+            terragrunt destroy -auto-approve -no-color
+            
+            cd -
+          done
+        env:
+          TG_NON_INTERACTIVE: "true"

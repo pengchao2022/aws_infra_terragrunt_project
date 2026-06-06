@@ -18,12 +18,6 @@ variable "vpc_tags" {
     
 }
 
-variable "subnet_cidr" {
-  type        = string
-  default     = "10.20.0.0/24"
-  description = "CIDR block for the subnet"
-}
-
 variable "subnet_tags" {
   type = map(string)
   default = {}  

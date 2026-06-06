@@ -62,6 +62,7 @@ jobs:
             echo "--- Initializing $module ---"
             # change to sub directory
             cd $module
+            # remove the cache file before init 
             rm -rf .terragrunt-cache
             # run terragrunt init 
             terragrunt init -reconfigure

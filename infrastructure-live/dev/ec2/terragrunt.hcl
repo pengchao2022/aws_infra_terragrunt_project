@@ -15,5 +15,6 @@ inputs = merge(
   read_terragrunt_config("inputs.hcl").inputs,
   {
     subnet_id = dependency.vpc.outputs.subnet_id
+    vpc_id    = dependency.vpc.outputs.vpc_id
   }
 )

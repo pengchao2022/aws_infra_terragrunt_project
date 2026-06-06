@@ -54,12 +54,18 @@ jobs:
           echo "the files in directory are: "
           ls -R
       
-      - name: Terragrunt Init
-        run: terragrunt run --all init -- -reconfigure
+      - name: Terragrunt Init (Manual Iteration)
+        run: |
+          # 手动遍历执行 init，并指定配置文件路径，解决“找不到”的死锁
+          MODULES=("dev/vpc" "dev/ec2" "prod/vpc" "stage/vpc" "test/vpc")
+          for module in "${MODULES[@]}"; do
+            echo "--- Initializing $module ---"
+            # 注意：如果目录结构只有两层（infrastructure-live/dev/vpc），用 ../.. 即可
+            terragrunt init --terragrunt-config ../../terragrunt.hcl -reconfigure -working-dir=$module
+          done
         env:
           TG_NON_INTERACTIVE: "true"
-          TG_ROOT_DIR: ${{ github.workspace }}/infrastructure-live
-
+          
       - name: Terragrunt Plan and Apply
         run: |
           terragrunt run --all plan -- -out=tfplan

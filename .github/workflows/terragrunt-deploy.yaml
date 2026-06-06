@@ -46,7 +46,7 @@ jobs:
 
       - name: Show Terragrunt Version
         run: terragrunt --version
-        
+
       - name: Debug Directory Structure
         run: |
           echo "the current directory is: "
@@ -56,7 +56,11 @@ jobs:
 
       
       - name: Terragrunt Plan
-        run: terragrunt --terragrunt-non-interactive plan
+        run: terragrunt plan
+        env:
+          TERRAGRUNT_NON_INTERACTIVE: "true"
 
       - name: Terragrunt Apply
-        run: terragrunt --terragrunt-non-interactive apply -auto-approve
+        run: terragrunt apply -auto-approve
+        env:
+          TERRAGRUNT_NON_INTERACTIVE: "true"

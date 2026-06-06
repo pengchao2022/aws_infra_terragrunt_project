@@ -1,7 +1,7 @@
 name: "Terragrunt Destroy"
 
 on:
-  workflow_dispatch: # 手动触发，避免意外删除生产环境
+  workflow_dispatch: 
 
 permissions:
   id-token: write
@@ -44,8 +44,7 @@ jobs:
             cd $module
             rm -rf .terragrunt-cache
             terragrunt init -reconfigure -no-color
-            # 修改原来的 terragrunt destroy 命令为：
-            terragrunt destroy -auto-approve -no-color --terragrunt-ignore-dependencies
+            terragrunt destroy -auto-approve -no-color
             cd $GITHUB_WORKSPACE/infrastructure-live
           done
 

@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 jobs:
-  terragrunt-apply:
+  terragrunt-deploy-resources:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     defaults:

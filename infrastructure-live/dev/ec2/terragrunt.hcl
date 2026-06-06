@@ -11,4 +11,9 @@ dependency "vpc" {
   config_path = "../vpc"
 }
 # dynamicly load variables
-inputs = read_terragrunt_config("inputs.hcl").inputs
+inputs = merge(
+  read_terragrunt_config("inputs.hcl").inputs,
+  {
+    subnet_id = dependency.vpc.outputs.subnet_id
+  }
+)

@@ -55,7 +55,7 @@ jobs:
           ls -R
       
       - name: Terragrunt Init
-        run: terragrunt run --all init --terragrunt-config ./terragrunt.hcl -- -reconfigure
+        run: terragrunt run --all init -reconfigure
         env:
           TG_NON_INTERACTIVE: "true"
 

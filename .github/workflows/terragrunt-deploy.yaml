@@ -56,29 +56,27 @@ jobs:
       
       - name: Terragrunt Init
         run: |
-          # Traverse all directories
-          MODULES=("dev/vpc" "prod/vpc" "stage/vpc" "test/vpc" "dev/ec2")
-          for module in "${MODULES[@]}"; do
-            echo "--- Initializing $module ---"
-            # change to sub directory
-            cd $module
-            # remove the cache file before init 
+          # 定义环境列表 (只包含 VPC，因为它们是 EC2 的基础)
+          VPCS=("dev/vpc" "prod/vpc" "stage/vpc" "test/vpc")
+          
+          # 1. 优先并发或顺序部署所有 VPC 模块
+          for vpc in "${VPCS[@]}"; do
+            echo "--- Deploying VPC: $vpc ---"
+            cd $vpc
             rm -rf .terragrunt-cache
-            # run terragrunt init 
+            # 必须用 apply，因为只有 apply 才会产生 outputs
             terragrunt init -reconfigure
-            # --- 在这里插入诊断逻辑 ---
-            if [ "$module" == "dev/ec2" ]; then
-              echo "--- DEBUG: Checking VPC outputs before EC2 init ---"
-              # 切换到 dev/vpc 目录查看输出
-              cd ../vpc
-              terragrunt output -json || echo "VPC outputs not found!"
-              cd ../ec2
-            fi
-            # ------------------------
-
-            # go back to live direcotory
+            terragrunt apply -auto-approve
             cd ../..
           done
+
+          # 2. VPC 全部就绪后，再部署 EC2
+          echo "--- Deploying EC2 ---"
+          cd dev/ec2
+          rm -rf .terragrunt-cache
+          terragrunt init -reconfigure
+          terragrunt apply -auto-approve
+          cd ../..
         env:
           TG_NON_INTERACTIVE: "true"
 

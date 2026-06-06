@@ -45,8 +45,7 @@ jobs:
           sudo chmod +x /usr/local/bin/terragrunt
 
       - name: Terragrunt Plan
-        run: terragrunt run-all plan
+        run: terragrunt plan --terragrunt-non-interactive
 
       - name: Terragrunt Apply
-        if: github.ref == 'refs/heads/main'
-        run: terragrunt run-all apply -auto-approve
+        run: terragrunt apply --terragrunt-non-interactive -auto-approve

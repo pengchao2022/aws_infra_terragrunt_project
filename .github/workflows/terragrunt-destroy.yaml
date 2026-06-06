@@ -36,27 +36,30 @@ jobs:
 
       - name: Terragrunt Destroy
         run: |
-          # 销毁顺序：先销毁依赖方(EC2)，再销毁资源提供方(VPC)
-          # 注意：此逻辑会按数组顺序逐个销毁，中间任何一个报错都会终止流程
-          MODULES=("dev/ec2" "dev/vpc" "test/vpc" "stage/vpc" "prod/vpc")
-          
-          for module in "${MODULES[@]}"; do
-            echo "--- Destroying $module ---"
-            
-            # 进入目录
+          # stage 1 destroy all the EC2 Instances
+          echo "--- Phase 1: Destroying EC2 Instances ---"
+          EC2_MODULES=("dev/ec2" "prod/ec2")
+          for module in "${EC2_MODULES[@]}"; do
+            echo "--- Destroying EC2: $module ---"
             cd $module
-            
-            # 清理缓存，确保读取的是当前线上最新的 State
             rm -rf .terragrunt-cache
-            
-            # 执行初始化
+            terragrunt init -reconfigure -no-color
+            terragrunt destroy -auto-approve -no-color
+            cd $GITHUB_WORKSPACE/infrastructure-live
+          done
+
+          # stage 2 delete all the VPCs
+          echo "--- Phase 2: Destroying VPCs ---"
+          VPC_MODULES=("dev/vpc" "test/vpc" "stage/vpc" "prod/vpc")
+          for module in "${VPC_MODULES[@]}"; do
+            echo "--- Destroying VPC: $module ---"
+            cd $module
+            rm -rf .terragrunt-cache
             terragrunt init -reconfigure -no-color
             
-            # 销毁资源
-            # -auto-approve 意味着不提示确认，请务必在运行前确认环境正确
-            terragrunt destroy -auto-approve -no-color
+            terragrunt destroy -target=aws_nat_gateway.main -auto-approve -no-color || true
             
-            # 始终返回到根目录，防止 cd 路径错乱
+            terragrunt destroy -auto-approve -no-color
             cd $GITHUB_WORKSPACE/infrastructure-live
           done
         env:

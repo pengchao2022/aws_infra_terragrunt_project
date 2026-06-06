@@ -1,0 +1,46 @@
+name: "Terragrunt Deploy"
+
+on:
+  pull_request:
+    type:
+      - closed
+    paths:
+      - 'infrastructure-live/**'
+      - 'infrastructure-modules/**'
+      - '.github/workflows/terragrunt-deploy.yaml'
+
+permissions:
+  id-token: write # 用于 OIDC 安全认证
+  contents: read
+
+jobs:
+  terragrunt-apply:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infrastructure-live
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }} # 在 GitHub 配置 Secrets
+          aws-region: us-east-1
+
+      - name: Setup Tools
+        run: |
+          # 安装 Terraform
+          curl -s https://raw.githubusercontent.com/terraform-linters/setup-tflint/master/install_linux.sh | bash
+          # 安装 Terragrunt
+          wget https://github.com/gruntwork-io/terragrunt/releases/latest/download/terragrunt_linux_amd64
+          sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
+          sudo chmod +x /usr/local/bin/terragrunt
+
+      - name: Terragrunt Plan
+        run: terragrunt run-all plan
+
+      - name: Terragrunt Apply
+        if: github.ref == 'refs/heads/main'
+        run: terragrunt run-all apply -auto-approve

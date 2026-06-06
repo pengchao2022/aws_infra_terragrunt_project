@@ -2,7 +2,7 @@ name: "Terragrunt Deploy"
 
 on:
   pull_request:
-    type:
+    types:
       - closed
     paths:
       - 'infrastructure-live/**'

@@ -61,12 +61,13 @@ jobs:
         env:
           TG_NON_INTERACTIVE: "true"
 
-      - name: Terragrunt Plan
-        run: terragrunt run --all plan
+      - name: Terragrunt Plan and Apply
+        run: |
+          # 1. 递归 plan 并保存 plan 文件到各自的目录
+          terragrunt run --all plan -out=tfplan
+          
+          # 2. 递归 apply 并强制加载对应的 plan 文件
+          # 注意：--all 参数必须统一，确保操作对象一致
+          terragrunt run --all apply -auto-approve tfplan
         env:
           TG_NON_INTERACTIVE: "true"
-
-      - name: Terragrunt Apply
-        run: terragrunt apply -auto-approve
-        env:
-          TERRAGRUNT_NON_INTERACTIVE: "true"

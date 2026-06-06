@@ -66,6 +66,16 @@ jobs:
             rm -rf .terragrunt-cache
             # run terragrunt init 
             terragrunt init -reconfigure
+            # --- 在这里插入诊断逻辑 ---
+            if [ "$module" == "dev/ec2" ]; then
+              echo "--- DEBUG: Checking VPC outputs before EC2 init ---"
+              # 切换到 dev/vpc 目录查看输出
+              cd ../vpc
+              terragrunt output -json || echo "VPC outputs not found!"
+              cd ../ec2
+            fi
+            # ------------------------
+
             # go back to live direcotory
             cd ../..
           done

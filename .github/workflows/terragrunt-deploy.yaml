@@ -46,9 +46,9 @@ jobs:
 
       - name: Debug Directory Structure
         run: |
-          echo "当前目录是:"
+          echo "the current directory is: "
           pwd
-          echo "目录下的文件列表:"
+          echo "the files in directory are: "
           ls -R
 
       - name: Terragrunt Plan

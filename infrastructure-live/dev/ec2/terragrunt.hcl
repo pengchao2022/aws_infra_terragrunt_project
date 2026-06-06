@@ -9,13 +9,12 @@ terraform {
 
 dependency "vpc" {
   config_path = "../vpc"
-  skip_outputs = true
 }
 # dynamicly load variables
 inputs = merge(
   read_terragrunt_config("inputs.hcl").inputs,
   {
-    subnet_id = dependency.vpc.outputs.public_subnet_ids
-    vpc_id    = dependency.vpc.outputs.vpc_id
+    vpc_id    = try(dependency.vpc.outputs.vpc_id, null)
+    subnet_id = try(dependency.vpc.outputs.public_subnet_ids, null)
   }
 )

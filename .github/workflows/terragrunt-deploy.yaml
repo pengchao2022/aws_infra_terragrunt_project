@@ -44,6 +44,9 @@ jobs:
           sudo mv terragrunt /usr/local/bin/terragrunt
           sudo chmod +x /usr/local/bin/terragrunt
 
+      - name: Show Terragrunt Version
+        run: terragrunt --version
+        
       - name: Debug Directory Structure
         run: |
           echo "the current directory is: "
@@ -51,8 +54,9 @@ jobs:
           echo "the files in directory are: "
           ls -R
 
+      
       - name: Terragrunt Plan
-        run: terragrunt plan --terragrunt-non-interactive
+        run: terragrunt --terragrunt-non-interactive plan
 
       - name: Terragrunt Apply
-        run: terragrunt apply --terragrunt-non-interactive -auto-approve
+        run: terragrunt --terragrunt-non-interactive apply -auto-approve

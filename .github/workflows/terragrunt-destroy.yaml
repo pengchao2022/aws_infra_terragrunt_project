@@ -44,7 +44,8 @@ jobs:
             cd $module
             rm -rf .terragrunt-cache
             terragrunt init -reconfigure -no-color
-            terragrunt destroy -auto-approve -no-color
+            # 修改原来的 terragrunt destroy 命令为：
+            terragrunt destroy -auto-approve -no-color --terragrunt-ignore-dependencies
             cd $GITHUB_WORKSPACE/infrastructure-live
           done
 

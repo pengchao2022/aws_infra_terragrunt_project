@@ -44,6 +44,13 @@ jobs:
           sudo mv terragrunt /usr/local/bin/terragrunt
           sudo chmod +x /usr/local/bin/terragrunt
 
+      - name: Debug Directory Structure
+        run: |
+          echo "当前目录是:"
+          pwd
+          echo "目录下的文件列表:"
+          ls -R
+
       - name: Terragrunt Plan
         run: terragrunt plan --terragrunt-non-interactive
 

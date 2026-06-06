@@ -56,7 +56,7 @@ jobs:
       
       - name: Terragrunt Init and Plan
         run: |
-          terragrunt run-all init -reconfigure
+          terragrunt run-all init -- -reconfigure
           terragrunt run-all plan
         env:
           TG_NON_INTERACTIVE: "true"

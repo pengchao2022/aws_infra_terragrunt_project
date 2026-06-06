@@ -54,10 +54,15 @@ jobs:
           echo "the files in directory are: "
           ls -R
       
-      - name: Terragrunt Init and Plan
-        run: |
-          terragrunt run-all init -- -reconfigure
-          terragrunt run-all plan
+      - name: Terragrunt Init
+        # 新版 v1.x 标准语法：terragrunt run --all init
+        # --all 参数对应原来的 run-all 功能
+        run: terragrunt run --all init -- -reconfigure
+        env:
+          TG_NON_INTERACTIVE: "true"
+
+      - name: Terragrunt Plan
+        run: terragrunt run --all plan
         env:
           TG_NON_INTERACTIVE: "true"
 

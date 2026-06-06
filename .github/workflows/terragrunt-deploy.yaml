@@ -53,12 +53,13 @@ jobs:
           pwd
           echo "the files in directory are: "
           ls -R
-
       
-      - name: Terragrunt Plan
-        run: terragrunt plan
+      - name: Terragrunt Init and Plan
+        run: |
+          terragrunt run-all init -reconfigure
+          terragrunt run-all plan
         env:
-          TERRAGRUNT_NON_INTERACTIVE: "true"
+          TG_NON_INTERACTIVE: "true"
 
       - name: Terragrunt Apply
         run: terragrunt apply -auto-approve

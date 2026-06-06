@@ -22,3 +22,8 @@ output "arn" {
   description = "The ARN of the EC2 instance"
   value = aws_instance.main.arn
 }
+
+output "instance_name" {
+  description = "The Name tag of the EC2 instance"
+  value       = try(aws_instance.main.tags_all["Name"], var.ec2_tags["Name"], "Unnamed-Instance")
+}

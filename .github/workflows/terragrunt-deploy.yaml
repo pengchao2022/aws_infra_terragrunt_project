@@ -75,6 +75,7 @@ jobs:
           rm -rf .terragrunt-cache
           terragrunt init -reconfigure
           terragrunt apply -auto-approve
+          cd ../..
           cd prod/ec2
           rm -rf .terragrunt-cache
           terragrunt init -reconfigure

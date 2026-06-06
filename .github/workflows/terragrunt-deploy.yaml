@@ -63,12 +63,8 @@ jobs:
 
       - name: Terragrunt Plan and Apply
         run: |
-          # -- 代表分隔符，后面的参数会透传给底层的 terraform plan
           terragrunt run --all plan -- -out=tfplan
-          
-          # 同样地，apply 也需要通过 -- 传递 tfplan 文件
           terragrunt run --all apply -- -auto-approve tfplan
         env:
           TG_NON_INTERACTIVE: "true"
 
-          

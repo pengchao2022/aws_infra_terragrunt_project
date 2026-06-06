@@ -34,5 +34,6 @@ resource "aws_instance" "main" {
     volume_type = "gp3"   
   }
   tags = var.ec2_tags
+  depends_on = [aws_security_group.main]
 }
 

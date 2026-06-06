@@ -5,6 +5,7 @@ variable "instance_type" {
 
 variable "subnet_id" {
   type = string
+  default = "subnet-placeholder"
 }
 
 variable "ami" {

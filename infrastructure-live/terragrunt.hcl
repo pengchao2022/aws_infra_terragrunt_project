@@ -3,7 +3,7 @@ locals {
   aws_region = "us-east-1"
 }
 
-# 自动配置 Remote State
+# automatically config remote state
 remote_state {
   backend = "s3"
   generate = {
@@ -11,7 +11,7 @@ remote_state {
     if_exists = "overwrite_terragrunt"
   }
   config = {
-    bucket         = "my-company-terraform-state-bucket" # 请替换为你真实的 Bucket
+    bucket         = "pengchao2022-terraform-state"
     key            = "${path_relative_to_include()}/terraform.tfstate"
     region         = local.aws_region
     encrypt        = true
@@ -19,7 +19,7 @@ remote_state {
   }
 }
 
-# 自动生成 Provider 配置
+# automatically get the provider info
 generate "provider" {
   path      = "provider.tf"
   if_exists = "overwrite_terragrunt"

@@ -26,16 +26,22 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }} # 在 GitHub 配置 Secrets
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }} 
           aws-region: us-east-1
 
-      - name: Setup Tools
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.0"
+      # tflint is used to check code specifications
+      - name: Setup Terragrunt
+        uses: terraform-linters/setup-tflint@v4 
+       
+      - name: Install Terragrunt
         run: |
-          # 安装 Terraform
-          curl -s https://raw.githubusercontent.com/terraform-linters/setup-tflint/master/install_linux.sh | bash
-          # 安装 Terragrunt
-          wget https://github.com/gruntwork-io/terragrunt/releases/latest/download/terragrunt_linux_amd64
-          sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
+          TG_VERSION=$(curl -s "https://api.github.com/repos/gruntwork-io/terragrunt/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")')
+          curl -L "https://github.com/gruntwork-io/terragrunt/releases/download/${TG_VERSION}/terragrunt_linux_amd64" -o terragrunt
+          sudo mv terragrunt /usr/local/bin/terragrunt
           sudo chmod +x /usr/local/bin/terragrunt
 
       - name: Terragrunt Plan

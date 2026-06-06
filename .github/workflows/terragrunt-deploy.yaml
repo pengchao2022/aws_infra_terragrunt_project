@@ -55,11 +55,10 @@ jobs:
           ls -R
       
       - name: Terragrunt Init
-        run: |
-          find . -type d -name ".terragrunt-cache" -exec rm -rf {} +
-          terragrunt run --all init --terragrunt-config ./terragrunt.hcl -- -reconfigure
+        run: terragrunt run --all init -- -reconfigure
         env:
           TG_NON_INTERACTIVE: "true"
+          TG_ROOT_DIR: ${{ github.workspace }}/infrastructure-live
 
       - name: Terragrunt Plan and Apply
         run: |

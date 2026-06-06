@@ -24,8 +24,10 @@ variable "volume_size" {
 
 variable "vpc_id" {
   type = string
+  default = ""
 }
 
 variable "public_subnet_list" {
   type = list(string)
+  default = []
 }

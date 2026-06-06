@@ -2,19 +2,10 @@ include "root" {
   path = find_in_parent_folders("root.hcl")
 }
 
-
+# 2. 指定对应的 Terraform 模块源码
 terraform {
   source = "../../../infrastructure-modules/vpc"
-  
 }
 
-inputs = {
-  vpc_cidr = "172.20.0.0/16"
-  subnet_cidr = "172.20.0.0/24"
-  vpc_tags = {
-    "name" = "maxwell"
-  }
-  subnet_tags = {
-    "name" = "maxwell"
-  }
-}
+# 3. 动态加载输入变量
+inputs = read_terragrunt_config("inputs.hcl").inputs

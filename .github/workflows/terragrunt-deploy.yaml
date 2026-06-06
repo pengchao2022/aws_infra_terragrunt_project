@@ -54,33 +54,43 @@ jobs:
           echo "the files in directory are: "
           ls -R
       
+      
       - name: Terragrunt Deploy Resources
         run: |
-          # first deploy VPC in different ENV
-          VPCS=("dev/vpc" "prod/vpc" "stage/vpc" "test/vpc")
+          ROOT_DIR="$GITHUB_WORKSPACE/infrastructure-live"
           
-          # fist deploy all VPC modules
+          # firstly deploy VPC
+          VPCS=("dev/vpc" "prod/vpc" "stage/vpc" "test/vpc")
           for vpc in "${VPCS[@]}"; do
-            echo "--- Deploying VPC: $vpc ---"
-            cd $vpc
-            rm -rf .terragrunt-cache
-            terragrunt init -reconfigure
-            terragrunt apply -auto-approve
-            cd ../..
+            TARGET_DIR="$ROOT_DIR/$vpc"
+            if [ -d "$TARGET_DIR" ]; then
+              echo "--- Deploying VPC: $vpc ---"
+              cd "$TARGET_DIR"
+              rm -rf .terragrunt-cache
+              terragrunt init -reconfigure -no-color
+              terragrunt apply -auto-approve -no-color
+              cd "$ROOT_DIR"
+            else
+              echo "WARNING: Directory $TARGET_DIR does not exist, skipping..."
+            fi
           done
 
-          # second deploy EC2
-          echo "--- Deploying EC2 ---"
-          cd dev/ec2
-          rm -rf .terragrunt-cache
-          terragrunt init -reconfigure
-          terragrunt apply -auto-approve
-          cd ../..
-          cd prod/ec2
-          rm -rf .terragrunt-cache
-          terragrunt init -reconfigure
-          terragrunt apply -auto-approve
-          cd ../..
+          # secondly deploy EC2
+          EC2_MODULES=("dev/ec2" "prod/ec2")
+          echo "--- Deploying EC2 Instances ---"
+          for module in "${EC2_MODULES[@]}"; do
+            TARGET_DIR="$ROOT_DIR/$module"
+            if [ -d "$TARGET_DIR" ]; then
+              echo "--- Processing: $module ---"
+              cd "$TARGET_DIR"
+              rm -rf .terragrunt-cache
+              terragrunt init -reconfigure -no-color
+              terragrunt apply -auto-approve -no-color
+              cd "$ROOT_DIR"
+            else
+              echo "WARNING: Directory $TARGET_DIR does not exist, skipping..."
+            fi
+          done
         env:
           TG_NON_INTERACTIVE: "true"
 

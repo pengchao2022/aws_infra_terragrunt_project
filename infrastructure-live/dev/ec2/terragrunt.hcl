@@ -9,6 +9,7 @@ terraform {
 
 dependency "vpc" {
   config_path = "../vpc"
+  skip_outputs = true
 }
 # dynamicly load variables
 inputs = merge(

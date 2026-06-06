@@ -54,23 +54,22 @@ jobs:
           echo "the files in directory are: "
           ls -R
       
-      - name: Terragrunt Init
+      - name: Terragrunt Deploy Resources
         run: |
-          # 定义环境列表 (只包含 VPC，因为它们是 EC2 的基础)
+          # first deploy VPC in different ENV
           VPCS=("dev/vpc" "prod/vpc" "stage/vpc" "test/vpc")
           
-          # 1. 优先并发或顺序部署所有 VPC 模块
+          # fist deploy all VPC modules
           for vpc in "${VPCS[@]}"; do
             echo "--- Deploying VPC: $vpc ---"
             cd $vpc
             rm -rf .terragrunt-cache
-            # 必须用 apply，因为只有 apply 才会产生 outputs
             terragrunt init -reconfigure
             terragrunt apply -auto-approve
             cd ../..
           done
 
-          # 2. VPC 全部就绪后，再部署 EC2
+          # second deploy EC2
           echo "--- Deploying EC2 ---"
           cd dev/ec2
           rm -rf .terragrunt-cache
@@ -80,10 +79,5 @@ jobs:
         env:
           TG_NON_INTERACTIVE: "true"
 
-      - name: Terragrunt Plan and Apply
-        run: |
-          terragrunt run --all plan -- -out=tfplan
-          terragrunt run --all apply -- -auto-approve tfplan
-        env:
-          TG_NON_INTERACTIVE: "true"
+     
 

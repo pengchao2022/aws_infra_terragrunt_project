@@ -1,7 +1,7 @@
 name: "Terragrunt Destroy"
 
 on:
-  workflow_dispatch: # 手动触发，避免意外删除生产环境
+  workflow_dispatch: 
 
 permissions:
   id-token: write

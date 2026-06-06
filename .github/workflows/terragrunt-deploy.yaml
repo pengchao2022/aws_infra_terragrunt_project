@@ -57,7 +57,7 @@ jobs:
       - name: Terragrunt Init
         run: |
           find . -type d -name ".terragrunt-cache" -exec rm -rf {} +
-          terragrunt run --all init -- -reconfigure
+          terragrunt run --all init --terragrunt-config ./terragrunt.hcl -- -reconfigure
         env:
           TG_NON_INTERACTIVE: "true"
 

@@ -14,8 +14,9 @@ dependency "vpc" {
 inputs = merge(
   read_terragrunt_config("inputs.hcl").inputs,
   {
-    public_subnet_list = try(dependency.vpc.outputs.public_subnet_ids, [])
     vpc_id             = try(dependency.vpc.outputs.vpc_id, "")
+    subnet_id          = try(dependency.vpc.outputs.public_subnet_ids[0], "")
+    public_subnet_list = try(dependency.vpc.outputs.public_subnet_ids, [])
     
   }
 )

@@ -75,6 +75,10 @@ jobs:
           rm -rf .terragrunt-cache
           terragrunt init -reconfigure
           terragrunt apply -auto-approve
+          cd prod/ec2
+          rm -rf .terragrunt-cache
+          terragrunt init -reconfigure
+          terragrunt apply -auto-approve
           cd ../..
         env:
           TG_NON_INTERACTIVE: "true"

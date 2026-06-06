@@ -56,8 +56,8 @@ jobs:
       
       - name: Terragrunt Init
         run: |
-          # 直接在项目根目录运行，并通过 --terragrunt-working-dir 指定路径
-          terragrunt run-all init --terragrunt-working-dir infrastructure-live -- -reconfigure
+          cd infrastructure-live
+          terragrunt run-all init -reconfigure
         env:
           TG_NON_INTERACTIVE: "true"
 
